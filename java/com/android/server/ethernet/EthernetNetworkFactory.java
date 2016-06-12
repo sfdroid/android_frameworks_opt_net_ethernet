@@ -35,7 +35,7 @@ import android.net.NetworkUtils;
 import android.net.StaticIpConfiguration;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.INetworkManagementService;
+//import android.os.INetworkManagementService;
 import android.os.Looper;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -80,7 +80,7 @@ class EthernetNetworkFactory {
     private EthernetManager mEthernetManager;
 
     /** To set link state and configure IP addresses. */
-    private INetworkManagementService mNMService;
+//    private INetworkManagementService mNMService;
 
     /* To communicate with ConnectivityManager */
     private NetworkCapabilities mNetworkCapabilities;
@@ -165,6 +165,7 @@ class EthernetNetworkFactory {
 
     private void setInterfaceUp(String iface) {
         // Bring up the interface so we get link status indications.
+        /*
         try {
             mNMService.setInterfaceUp(iface);
             String hwAddr = null;
@@ -188,6 +189,7 @@ class EthernetNetworkFactory {
         } catch (RemoteException e) {
             Log.e(TAG, "Error upping interface " + mIface + ": " + e);
         }
+        */
     }
 
     private boolean maybeTrackInterface(String iface) {
@@ -224,6 +226,7 @@ class EthernetNetworkFactory {
         if (staticConfig.ipAddress != null &&
                 staticConfig.gateway != null &&
                 staticConfig.dnsServers.size() > 0) {
+/*
             try {
                 Log.i(TAG, "Applying static IPv4 configuration to " + mIface + ": " + staticConfig);
                 InterfaceConfiguration config = mNMService.getInterfaceConfig(mIface);
@@ -233,6 +236,7 @@ class EthernetNetworkFactory {
             } catch(RemoteException|IllegalStateException e) {
                Log.e(TAG, "Setting static IP address failed: " + e.getMessage());
             }
+*/
         } else {
             Log.e(TAG, "Invalid static IP configuration.");
         }
@@ -324,11 +328,13 @@ class EthernetNetworkFactory {
                                             mHwAddr);
                                     updateAgent();
                                     mNetworkAgent = null;
+/*
                                     try {
                                         mNMService.clearInterfaceAddresses(mIface);
                                     } catch (Exception e) {
                                         Log.e(TAG, "Failed to clear addresses or disable ipv6" + e);
                                     }
+*/
                                 } else {
                                     Log.d(TAG, "Ignoring unwanted as we have a more modern " +
                                             "instance");
@@ -348,7 +354,7 @@ class EthernetNetworkFactory {
     public synchronized void start(Context context, Handler target) {
         // The services we use.
         IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
-        mNMService = INetworkManagementService.Stub.asInterface(b);
+//        mNMService = INetworkManagementService.Stub.asInterface(b);
         mEthernetManager = (EthernetManager) context.getSystemService(Context.ETHERNET_SERVICE);
 
         // Interface match regex.
@@ -365,14 +371,17 @@ class EthernetNetworkFactory {
 
         // Start tracking interface change events.
         mInterfaceObserver = new InterfaceObserver();
+/*
         try {
             mNMService.registerObserver(mInterfaceObserver);
         } catch (RemoteException e) {
             Log.e(TAG, "Could not register InterfaceObserver " + e);
         }
+*/
 
         // If an Ethernet interface is already connected, start tracking that.
         // Otherwise, the first Ethernet interface to appear will be tracked.
+/*
         try {
             final String[] ifaces = mNMService.listInterfaces();
             for (String iface : ifaces) {
@@ -395,6 +404,7 @@ class EthernetNetworkFactory {
         } catch (RemoteException e) {
             Log.e(TAG, "Could not get list of interfaces " + e);
         }
+*/
     }
 
     public synchronized void stop() {
